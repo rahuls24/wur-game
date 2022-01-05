@@ -1,49 +1,35 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import {
+	Avatar,
+	Button,
+	TextField,
+	FormControlLabel,
+	Checkbox,
+	Link,
+	Paper,
+	Box,
+	Grid,
+	Typography,
+} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-	return (
-		<Typography
-			variant='body2'
-			color='text.secondary'
-			align='center'
-			{...props}
-		>
-			{'Copyright © '}
-			<Link color='inherit' href='https://mui.com/'>
-				Your Website
-			</Link>{' '}
-			{new Date().getFullYear()}
-			{'.'}
-		</Typography>
-	);
-}
-
+import Copyright from './Copyright';
+import { userManagement } from '../actions/userManagement';
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const theme = createTheme();
-
-export default function Login() {
-	const handleSubmit = event => {
+function Signin(props) {
+	let navigate = useNavigate();
+	const handleSubmit = async event => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
-		// eslint-disable-next-line no-console
-		console.log({
-			email: data.get('email'),
-			password: data.get('password'),
-		});
+		await props.signinUser(data.get('email'), data.get('password'));
+		navigate('/');
 	};
-
+	React.useEffect(() => {
+		console.log(props);
+	}, [props]);
 	return (
 		<ThemeProvider theme={theme}>
 			<Grid container component='main' sx={{ height: '100vh' }}>
@@ -54,7 +40,7 @@ export default function Login() {
 					sm={4}
 					md={7}
 					sx={{
-						backgroundImage: 'url(assets/images/backgroundLogin.jpg)',
+						backgroundImage: 'url(/assets/images/backgroundLogin.jpg)',
 						backgroundRepeat: 'no-repeat',
 						backgroundColor: t =>
 							t.palette.mode === 'light'
@@ -125,7 +111,7 @@ export default function Login() {
 									</Link>
 								</Grid>
 								<Grid item>
-									<Link href='#' variant='body2'>
+									<Link href='/auth/signup' variant='body2'>
 										{"Don't have an account? Sign Up"}
 									</Link>
 								</Grid>
@@ -138,3 +124,11 @@ export default function Login() {
 		</ThemeProvider>
 	);
 }
+function mapStateToProps(state) {
+	const { userManagement } = state;
+	return userManagement;
+}
+const mapDispatchToProps = {
+	signinUser: userManagement.signinUser,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Signin);
